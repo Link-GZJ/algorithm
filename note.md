@@ -88,3 +88,31 @@ p = temp;
 #### 7.两个链表是否相交
 - 解决这个问题的核心是，让p1、p2通过某些方式同时到达相交点c
 - 可以让p1走完A之后继续走B,p2走完B之后走A，理论上他们走的总距离时相等的，当他们相遇时，就是相交点
+
+### lc167、26、27、283、344、5、83 数组问题中的双指针技巧
+
+#### 1.快慢指针技巧
+- 原地修改数组问题，或是对某些元素原地删除。另一大类就是滑动窗口算法，这个后面总结
+#### 2.左右指针的常用算法
+- 二分查找
+```java
+int binarySearch(int[] nums, int target){
+    int left = 0, right = nums.length - 1;
+    while(left <= right){
+        int mid = (left + right) / 2;
+        if(nums[mid] == target){
+            return mid;
+        }else if(nums[mid] > target){
+            right = mid - 1;
+        }else{
+            left = mid + 1;
+        }
+    }
+    //未找到
+    return -1;
+}
+```
+- 查找一个排序数组的两数之和
+- 反转数组
+- 回文串的判断
+- 寻找最长回文串，解决问题的关键是，**从中间向两端扩散的双指针技巧**
