@@ -403,3 +403,74 @@ for(...){
         preNum=nums[i];
 }
 ```
+
+### BFS算法框架
+- 常见场景：在一幅“图”中找到从起点start不断扩散到终点target的最近距离(和树的层序遍历很像)，重要的数据结构：队列，代码框架：
+
+```java
+//计算起点start到终点target的最近距离
+int BFS(Node start,Node target){
+    Queue<Node> q;//核心数据结构
+    Set<String> visited; //避免走回头路
+    q.offer(start);
+    visited.add(start);
+    while(!q.isEmpty){
+        //临时变量，因为q的size会变
+        int sz = q.size();
+        //将当前队列的节点向四周扩散
+        for(int i = 0; i < sz; i++){
+            Node cur = q.poll();
+            if(cur == target){
+                return step;    
+            }
+            //将cur的相邻节点加入队列
+            for(Node x : cur.adj()){
+                if(!visited.contains(x)){
+                    q.offer(x);
+                    visited.add(x);
+                }       
+            }
+        }
+        step++;
+    }
+    //走到这里，说明无解，不能走到目标节点
+}
+```
+- 知道就行：双向BFS优化，与传统的BFS时间复杂度相同，但少遍历一些节点，效率确实快一些，使用限制的必须知道终点target
+
+>![img.png](resource/bfs1.png)
+> ![img_1.png](resource/bfs2.png)
+
+```java
+//计算起点start到终点target的最近距离
+int BFS(Node start,Node target){
+    Set<String> q1;
+    Set<String> q2;
+    Set<String> visited; //避免走回头路
+    q1.offer(start);
+    q2.offer(target);
+    while(!q1.isEmpty && !q2.isEmpty()){
+        //哈希集合在遍历的过程中不能修改，用 temp 存储扩散结果
+        Set<Node> temp;
+        //将当前队列的节点向四周扩散
+        for(String cur : q1){
+            if(q2.contains(cur)){
+                return step;    
+            }
+            //这个位置滞后，否则q1 和 q2永远不会相遇
+            visited.add(x);
+            //将cur的相邻节点加入
+            for(Node x : cur.adj()){
+                if(!visited.contains(x)){
+                    temp.add(x);
+                }       
+            }
+        }
+        step++;
+        //这里交换 q1 q2，下一轮 while 就是扩散 q2
+        q1 = q2;
+        q2 = temp;
+    }
+    //走到这里，说明无解，不能走到目标节点
+}
+```
