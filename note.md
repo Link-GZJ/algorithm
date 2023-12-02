@@ -474,3 +474,126 @@ int BFS(Node start,Node target){
     //走到这里，说明无解，不能走到目标节点
 }
 ```
+
+### 二分搜索详解
+- **二分思维的精髓是：通过已知的信息尽可能的收缩搜索空间**
+- 最基本的二分查找框架，局限性在于不能用于查找边界情况，比如target第一次或最后一次出现的位置
+
+```java
+//寻找一个数
+int binarySearch(int[] nums, int target){
+    //查找区间[left,right]
+    int left = 0, right = nums.length - 1;
+    //终止条件 left = right + 1
+    while(left <= right){
+        //防止溢出
+        int mid = left + (right - left) / 2;
+        if(nums[mid] == target){
+            //找到目标元素
+            return mid;
+        }else if(nums[mid] > target){
+            right = mid - 1;
+        }else if(nums[mid] < target){
+            left = mid + 1;
+        }
+    }
+    //未找到
+    return -1;
+}
+```
+- 寻找左侧边界的二分搜索，这里举出两种写法
+
+```java
+//寻找一个数第一次出现的位置 写法一：区间左闭右开
+int binarySerch(int[] nums, int target){
+    //查找区间[left,right)
+    int left = 0, right = nums.length;
+    //终止条件 left = right
+    while(left < right){
+        int mid = left + (right -left) / 2;
+        //边界向左靠拢
+        if(nums[mid] == target){
+            right = mid;
+        }else if(nums[mid] > target){
+            right = mid;
+        }else if(nums[mid] < target){
+            left = mid + 1;
+        }
+    }
+    //防止数组越界
+    if(left < 0 || left >= nums.length){
+        return -1;    
+    }
+    return nums[left] == target ? left : -1;
+}
+
+//写法二，区间左闭右闭
+int binarySearch(int[] nums, int target){
+    //区间为[left,right]
+    int left = 0, right = nums.length - 1;
+    //终止条件为left = right + 1;
+    while(left <= right){
+        int mid = left + (right - left) / 2;
+        if(nums[mid] == target){
+            right = mid - 1;
+        }else if(nums[mid] > target){
+            right = mid - 1;
+        }else if(nums[mid] < target){
+            left = mid + 1；
+        }
+    }
+    //防止数组越界
+    if(left < 0 || left >= nums.length){
+        return -1;
+    }
+    return nums[left] == target ? left : -1;
+}
+```
+
+- 寻找右侧边界的二分查找
+
+```java
+//寻找一个数最后一次出现的位置 写法一：区间左闭右开
+int binarySearch(int[] nums, int target){
+    int left = 0, right = nums.length;
+    while(left < right){
+        int mid = left + (right - left) / 2;
+        if(nums[mid] == target){
+            left = mid + 1;
+        }else if(nums[mid] > target){
+            right = mid;
+        }else if(nums[mid] < target){
+            left = mid + 1;
+        }
+    }
+    if(left - 1 < 0 || left - 1 >= nums.length){
+        return -1;
+    }
+    return nums[left - 1] == target ? left-1 : -1;
+}
+//第二种写法 左闭右闭
+int binarySearch(int[] nums, int target){
+    int left = 0, right = nums.length - 1;
+    while(left <= right){
+        int mid = left + (right - left) / 2;
+        if(nums[mid] == target){
+            left = mid + 1;
+        }else if(nums[mid] > target){
+            right = mid - 1;
+        }else if(nums[mid] < target){
+            left = mid + 1;
+        }
+    }
+    if(left - 1 < 0 || left - 1 >= nums.length){
+        return -1;
+    }
+    return nums[left - 1] == target ? left-1 : -1;
+    //或下面这种写法
+    /*
+    if(right < 0 || right >= nums.length){
+        return -1;
+    }
+    return nums[right] == target ? right : -1; 
+    */
+}
+```
