@@ -597,3 +597,39 @@ int binarySearch(int[] nums, int target){
     */
 }
 ```
+
+### 滑动窗口算法
+- 算法时间复杂度一般为O(n)，一般用于解决子串、子数组问题
+- 核心模板框架：
+
+```java
+void slidingWindow(String s){
+    //用合适的数据结构记录窗口中的数据
+    Map<Character, Integer> window = new HashMap<>();
+    //左闭右开滑动区间
+    int left = 0, right = 0;
+    while(right < s.length()){
+        //c是移入窗口的字符
+        char c = s.charAt(right);
+        window.put(c, window.getOrDefault(c, 0) + 1);
+        //增大窗口
+        right++;
+        //进行窗口内的数据更新
+        ...
+        //判断左侧区间是否需要收缩
+        while(window needs shrink){
+            //d是移出窗口的字符
+            char d = s.charAt(left);
+            window.put(d, window.get(d) - 1);
+            //缩小窗口
+            left++;
+            //进行窗口内数据的更新
+            ...
+        }
+    }
+}
+```
+- 使用该框架时需要思考几个问题
+  - 什么时候扩大窗口
+  - 什么时候缩小窗口
+  - 什么时候更新结果
