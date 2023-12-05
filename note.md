@@ -651,3 +651,48 @@ dp[0][1] = -prices[0];
 ### 打家劫舍问题
 - 不要被数组索引迷惑，状态就是索引，选择是抢或不抢，要想知道num[0]处的最大金额，必须要先走num[1.2.3...],base case是num[>=length] = 0
 - 状态转移方程 ： res_i = Math.max(抢：nums[i] + dp(i+2),不抢：dp(i+1));
+
+### nSum问题
+- 给定int[] nums和target,求nums中和为target的2个元素，可能存在多对，返回List<List<Integer>>,拓展：3求个元素的和？4个..N个
+- 数组首先要排序，然后使用下面的代码框架:
+```java
+//其中start为元素起点，n为计算几个元素的和,target使用long类型，int可能溢出
+List<List<Integer>> nSum(int start, int n, long target, int[] nums){
+    if(n < 2){
+        return;
+    }
+    List<List<Integer>> res = new ArrayList<>();
+    //求两个元素和
+    if(n == 2){
+        int l = start, r = nums.length - 1;
+        while(l < r){
+            int left = nums[l], right = nums[r];
+            int sum = left + right;
+            if(sum == target){
+                res.add(new ArrayList<>(Arrays.asList(left,right)));
+                //移动指针,跳过重复元素
+                while(l < r && nums[l] == left) l++;
+                while(l < r && nums[r] == right) r--;
+            }else if(sum > target){
+                while(l < r && nums[r] == right) r--;   
+            }else if(sum < target){
+                while(l < r && nums[l] == left) l++;
+            }   
+        }
+        return res;
+    }
+    //大于两个元素,使用递归
+    else{
+        for(int i = start; i < nums.length; i++){
+            List<List<Integer>> ns = nSum(i + 1, n-1, target-nums[i], nums);
+            for(List<Integer> li : ns){
+                li.add(nums[i]);
+                res.add(li);
+            }   
+            //跳过重复元素
+            while(i < nums.length-1 && nums[i] == nums[i+1]) i++;
+        }
+        return res;
+    }
+}
+```
