@@ -160,6 +160,37 @@ public ListNode reverseBetween(ListNode head, int left, int right){
 }
 ```
 
+#### 9.k个一组反转链表
+
+```java
+//k个一组反转链表，返回新的头节点
+public ListNode reverseKGroup(ListNode head, int k){
+    if(head == null) return null;
+    ListNode a, b;
+    a = b = head;
+    for(int i = 0; i < k; i++){
+        //数量不足k个，直接返回
+        if(b == null)return head;
+        b = b.next;
+    }
+    //反转[a,b)
+    ListNode newNode = reverse(a, b);
+    //递归
+    a.next = reverseKGroup(b, k);
+    return newNode;
+}
+private ListNode reverse(ListNode a, ListNode b){
+    ListNode p = a, pre = null, temp;
+    while(p != b){
+        temp = p.next;
+        p.next = pre;
+        pre = p;
+        p = temp;
+    }
+    return pre;
+}
+```
+
 ### lc167、26、27、283、344、5、83 数组问题中的双指针技巧
 
 #### 1.快慢指针技巧
