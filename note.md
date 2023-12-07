@@ -121,6 +121,45 @@ Node temp=p.next;
 - 解决这个问题的核心是，让p1、p2通过某些方式同时到达相交点c
 - 可以让p1走完A之后继续走B,p2走完B之后走A，理论上他们走的总距离时相等的，当他们相遇时，就是相交点
 
+#### 8.递归反转单链表
+
+```java
+//输入一个单链表的头节点，将该链表反转，返回新的头节点
+public ListNode reverse(ListNode head){
+    if(head == null || head.next == null){
+        return head;
+    }
+    ListNode last = reverse(head.next);
+    head.next.next = head;
+    head.next = null;
+    return last;
+}
+
+//输入一个单链表的头节点，反转链表的前n个节点，返回新的头节点
+ListNode next = null;//第n+1个节点
+public ListNode reverseN(ListNode head, int n){
+        if(n == 1){
+            next = head.next;
+            return head;
+        }
+        ListNode last = reverseN(head.next, n-1);
+        head.next.next = head;
+        head.next = next;
+        return last;
+}
+
+//输入一个单链表的头节点，反转链表的[left,right]节点，返回新的头节点
+public ListNode reverseBetween(ListNode head, int left, int right){
+    if(left == 1){
+        //反转链表的前n个节点
+        reverseN(head, right);    
+    }
+    //如果head是索引1，那么要反转的起点是left;如果head.next是索引一，那么要反转的起点就是left-1.
+    head.next = reverseBetween(head.next, left-1, right-1);
+    return head;
+}
+```
+
 ### lc167、26、27、283、344、5、83 数组问题中的双指针技巧
 
 #### 1.快慢指针技巧
