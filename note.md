@@ -191,6 +191,82 @@ private ListNode reverse(ListNode a, ListNode b){
 }
 ```
 
+#### 10.判断回文链表
+
+- 寻找回文串的核心思想是从中心向两端拓展
+- 判断回文串则是从两端向中心遍历
+
+```java
+/*
+ * 递归判断回文链表
+ * 时空复杂度都为O(n)
+ */
+ListNode left;
+public boolean isPalindrome(ListNode head){
+    left = head;
+    return palindrome(head);
+}
+private boolean palindrome(ListNode head){
+    if(head == null){
+        return true;    
+    }
+    boolean res = palindrome(head.next);
+    res = res && left.val == head.val;
+    left = left.next;
+    return res;
+}
+
+/*
+ * 中点反转判断法
+ * 时间复杂度为O(n),空间复杂度为O(1)
+ * 会改变原始链表结构
+ */
+public boolean isPalindrome(ListNode head){
+    //利用快慢指针找到链表中点
+    ListNode slow, fast;
+    while(fast != null && fast.next != null){
+        slow = slow.next;
+        fast = fast.next.next;
+    }
+    //链表个数为奇数时，slow需要往后移动，使得右边长度小于左边
+    if(fast != null)slow = slow.next;
+    //反转以slow为头节点的链表
+    ListNode right = reverse(slow);
+    ListNode left = head;
+    while(right != null){
+        if(right.val != left.val){
+            return false;
+        }
+        right = right.next;
+        left = left.next;
+    }
+    /*
+      如果要恢复原来的链表结构,如下图
+      ListNode q = reverse(slow);
+      ListNode p = null;
+      while(right != null){
+          //链表个数为偶数
+          p=left;
+          //奇数
+          p = left.next;
+      }  
+      p.next = reverse(q);
+     */
+    return true;
+}
+private ListNode reverse(ListNode head){
+    ListNode p = head, pre = null, temp = null;
+    while(p != null){
+        temp = p.next;
+        p.next = pre;
+        pre = p;
+        p = temp;
+    }
+    return pre;
+}
+```
+![img.png](resource/palindrome.png)
+
 ### lc167、26、27、283、344、5、83 数组问题中的双指针技巧
 
 #### 1.快慢指针技巧
@@ -205,18 +281,18 @@ private ListNode reverse(ListNode a, ListNode b){
 int binarySearch(int[]nums,int target){
         int left=0,right=nums.length-1;
         while(left<=right){
-        int mid=(left+right)/2;
-        if(nums[mid]==target){
-        return mid;
-        }else if(nums[mid]>target){
-        right=mid-1;
-        }else{
-        left=mid+1;
-        }
+            int mid=(left+right)/2;
+            if(nums[mid]==target){
+                return mid;
+            }else if(nums[mid]>target){
+                right=mid-1;
+            }else{
+                left=mid+1;
+            }
         }
         //未找到
         return-1;
-        }
+}
 ```
 
 - 查找一个排序数组的两数之和
@@ -257,20 +333,20 @@ void levelTraverse(TreeNode root){
         q.offer(root);
         //从上到下遍历二叉树的每一层
         while(!q.isEmpty()){
-        int sz=q.size();
-        //从左至右遍历同一层的每一个节点
-        for(int i=0;i<sz; i++){
-        TreeNode cur=q.poll();
-        //将下一层节点放入队列
-        if(cur.left!=null){
-        q.offer(cur.left);
+            int sz=q.size();
+            //从左至右遍历同一层的每一个节点
+            for(int i=0;i<sz; i++){
+                TreeNode cur=q.poll();
+                //将下一层节点放入队列
+                if(cur.left!=null){
+                    q.offer(cur.left);
+                }
+                if(cur.right!=null){
+                    q.offer(cur.right);
+                }
+            }
         }
-        if(cur.right!=null){
-        q.offer(cur.right);
-        }
-        }
-        }
-        }
+}
 ```
 
 ### 动态规划的解题框架
