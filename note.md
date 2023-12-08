@@ -842,3 +842,39 @@ List<List<Integer>> nSum(int start, int n, long target, int[] nums){
     }
 }
 ```
+
+### 前缀和数组
+
+- 前缀和技巧用于快速、频繁地计算一个索引区间内的元素之和
+```java
+/**
+ * 一维数组的前缀和
+ */
+int[] preSum;//preSum[i]存储 0 到 i-1 的元素之和
+public void pre(int[] nums){
+    preSum = new int[nums.length+1];
+    for(int i = 1; i < preSum.length; i++){
+        preSum[i] = preSum[i-1] + nums[i-1];    
+    }
+}
+
+/**
+ * 二维数组的前缀和
+ */
+int[][] preSum;//preSum[i] 存储左上坐标[0,0],右下坐标[i-1,j-1]的元素之和
+public void pre(int[][] nums){
+    preSum = new int[nums.length+1][nums[0].length+1];
+    for(int i = 1; i < preSum.length; i++){
+        for(int j = 1; j < preSum[0].length; j++){
+            //这个公式想象一下面积图，很好理解
+            preSum[i][j] = preSum[i-1][j] + preSum[i][j-1] + nums[i-1][j-1] - preSum[i-1][j-1];
+        }    
+    }
+    //任意子矩阵的元素和可以转化成它周边几个大矩阵的元素和的运算，如下图：
+        int x1,y1;//左上角坐标
+        int x2,y2;//右下角坐标
+        area = preSum[x2+1][y2+1] - preSum[x1][y2+1] - preSum[x2+1][y1] + preSum[x1][y1];
+        //这里不能是x1+1,加一就多减了
+}
+```
+![img.png](resource/presum.png)
