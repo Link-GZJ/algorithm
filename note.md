@@ -878,3 +878,43 @@ public void pre(int[][] nums){
 }
 ```
 ![img.png](resource/presum.png)
+
+
+### 差分数组
+
+- 差分数组主要应用场景是频繁的对原始数组某个区间的元素进行增减
+```java
+/**
+ * 差分数组
+ */
+class Difference {
+  int[] diff;
+
+  //构造差分数组
+  public Difference(int[] nums) {
+    diff = new int[nums.length];
+    diff[0] = nums[0];
+    for (int i = 1; i < diff.length; i++) {
+      diff[i] = nums[i] - nums[i - 1];
+    }
+  }
+
+  //对区间元素进行增减
+  public void increment(int start, int end, int val) {
+    diff[start] += val;
+    if (end + 1 < diff.length) {
+      diff[end + 1] -= val;
+    }
+  }
+  
+  //返回结果
+  public int[] result(){
+    int[] res = new int[diff.length];
+    res[0] = diff[0];
+    for (int i = 1; i < res.length; i++) {
+      res[i] = res[i-1] + diff[i];
+    }
+    return res;
+  }
+}
+```
