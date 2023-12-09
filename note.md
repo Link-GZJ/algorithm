@@ -918,3 +918,84 @@ class Difference {
   }
 }
 ```
+
+### 二维数组的遍历技巧
+
+- 原地旋转矩阵，先按对角线交换，然后每行交换
+```java
+//顺时针旋转矩阵，左上右下对角线交换
+int n = nums.length;
+for(int i = 0; i < n; i++){
+    for(int j = i; j < n; j++){
+        int temp = nums[i][j];
+        nums[i][j] = nums[j][i];
+        nums[j][i] = temp;
+    }
+}
+//交换一维数组元素
+for(int[] arr : nums){
+    reverse(arr);
+}
+private void reverse(int[] arr){
+    int left = 0, right = arr.length-1;
+    while(left < right){
+        int temp = arr[left];
+        arr[left] = arr[right];
+        arr[right] = temp;
+        left++;
+        right--;
+    }
+}
+
+//逆时针旋转矩阵,右上左下对角线交换
+for(int i = 0; i < n; i++){
+    for(int j = 0; j < n-i; j++){
+        int temp = nums[i][j];
+        nums[i][j] = nums[n-j-1][n-i-1];
+        nums[n-j-1][n-i-1] = temp;
+    }
+}
+//交换一维数组元素
+for(int[] arr : nums){
+    reverse(arr);
+}
+```
+- 矩阵的螺旋遍历，解题的核心思路是按照上、右、下、左的顺序遍历数组，并使用四个变量记录边界
+```java
+public List<Integer> spiralOrder(int[][] matrix){
+    int m = matrix.length, n = matrix[0].length;
+    //上下边界
+    int upper_bound = 0, lower_bound = m-1;
+    //左右边界
+    int left_bound = 0, right_bound = n-1;
+    List<Integer> res = new ArrayList<>();
+    终止条件res.size = m*n 
+    while(res.size() < m*n){
+        if(upper_bound <= lower_bound){
+            for(int j = left_bound; j <= right_bound; j++){
+                res.add(matrix[upper_bound][j]);    
+            }   
+            upper_bound++;
+        }
+        if(left_bound <= right_bound){
+            for(int i = upper_bound; i <= lower_bound; i++){
+                res.add(matrix[i][right_bound]);    
+            }
+            right_bound--;
+        }
+        if(upper_bound <= lower_bound){
+            for(int j = right_bound; j >= left_bound; j--){
+                res.add(matrix[lower_bound][j]);    
+            }
+            lower_bound--;
+        }
+        if(left_bound <= right_bound){
+            for(int i = lower_bound; i >= upper_bound; i--){
+                res.add(matrix[i][left_bound]);    
+            }
+            left_bound++;
+        }
+    }
+    return res;
+}
+```
