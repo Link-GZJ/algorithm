@@ -999,3 +999,74 @@ public List<Integer> spiralOrder(int[][] matrix){
     return res;
 }
 ```
+
+### Rabin Karp字符串匹配算法
+
+- 在滑动窗口中快速计算窗口中元素的哈希值，称滑动哈希技巧。整型溢出问题、哈希冲突问题
+```java
+/**
+ * 在数字低位添加数字，删除数字的最高位，用R表示进制，L表示数字的位数
+ */
+
+//在低位添加一个数字
+int number = 1234;
+//num的进制
+int R = 10;
+//想在num的低位添加的数字
+int appendVal = 5;
+//运算
+num = num * R + appendVal;//num = 12345
+
+//删除最高位的一位数字
+int num = 4321;
+//num的进制
+int R = 10;
+//num最高位的数字
+int removeVal = 4;
+//此时num的位数
+int L = 4;
+//运算
+num = num - removeVal * R^(L-1);// 4321 - 4*10^3 = 4321 - 4000 = 321;
+
+```java
+//Rabin-Karp 指纹字符串查找算法
+public class RabinKarp{
+    int rabinKarp(String txt, String pat){
+        //进制 只考虑ASCII编码
+        int R = 256;
+        int L = pat.length();
+        //取模，尽可能大且为素数，减少哈希冲突
+        long Q = 123456789;
+        long RL = 1;
+        for(int i = 1; i < L; i++){
+            RL = (RL * R) % Q;
+        }
+        //待匹配字符串的哈希值
+        long patHash = 0;
+        for(int i = 0; i < pat.length(); i++){
+            patHash = (patHash * R + pat.charAt(i)) % Q;
+        }
+        //窗口内元素的哈希值
+        long windowHash = 0;
+        int left = 0, right = 0;
+        while (right < txt.length()){
+            //(x + y)%q = (x%q + y%q)%q
+            windowHash = ((windowHash * R) % Q + txt.charAt(right)) % Q;
+            right++;
+            if(right - left == L){
+                if(windowHash == patHash){
+                    //避免哈希冲突，再次确认
+                    if(txt.substring(left, right).equals(pat)){
+                        return left;
+                    }
+                }
+                //x % q = (x + q)%q 
+                // 防止  windowHash - (txt.charAt(left) * RL) % Q  为负数
+                windowHash = (windowHash - (txt.charAt(left) * RL) % Q + Q) % Q;
+                left++;
+            }
+        }
+        return -1;
+    }
+}
+```
