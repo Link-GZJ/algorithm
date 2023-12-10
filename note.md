@@ -1070,3 +1070,46 @@ public class RabinKarp{
     }
 }
 ```
+
+### 带权重的随机选择算法
+
+- 给定数组nums,nums[i] 为 下标i元素的权重，实现函数，根据权重随机返回nums的下标
+- 解题思路 ：前缀和 + 二分查找技巧
+```java
+class Solution{
+    //前缀和数组
+    private int[] preSum;
+    //随机数
+    private Random random = new Random();
+    public Solution(int[] w){
+        //构建前缀和数组
+        preSum = new int[w.length+1];
+        preSum[0] = 0;
+        for(int i = 1; i < preSum.length; i++){
+            preSum[i] = preSum[i-1] + w[i-1];
+        }
+    }
+    public int pickIndex(){
+        int n = preSum.length;
+        //随机数 [0,preSum[n-1]) 加一则  [1, preSum[n-1]]
+        int num = random.nextInt(preSum[n-1]) + 1;
+        //二分查找左侧边界 查找大于等于num的最小索引，preSum 与 w 有索引差，故减一
+        return leftBound(num) - 1;
+    }
+    private int leftBound(int num){
+        int left = 1, right = preSum.length;
+        while(left < right){
+            int mid = left + (right - left) / 2;
+            if(preSum[mid] == num){
+                right = mid;
+            } else if (preSum[mid] > num) {
+                right = mid;
+            }else{
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+}
+```
+>![img.png](resource/random.png)
