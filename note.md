@@ -743,6 +743,30 @@ int binarySearch(int[] nums, int target){
     */
 }
 ```
+- 二分查找的应用
+  - 一般是求最值，题目可以抽象成一个自变量x(一般是题目返回的结果)，和关于x的线性函数f(x),题目会给定一个目标值 f(x) = target,让你求x的值
+  - 这时的left、right就是x的取值范围，根据题目确定是左侧边界搜索还是右侧边界搜索
+  - 例如给定一个递增数组，让你返回值为target的最小下标
+  
+```java
+public int findMinIndex(int[] nums, int target){
+    //下标的取值范围
+    int left_x = 0, right_x = nums.length;
+    while(left_x < right_x){
+        int mid = left_x + (right_x-left_x)/2;
+        if(f(nums,mid) >= target){
+            right = mid;
+        }else{
+            left = mid + 1;
+        }
+    }
+    return left;
+}
+//这时下标索引就是自变量x, 返回数组中的值，随着x增大，nums[i]呈线性递增
+private int f(int[] nums, int x){
+    return nums[x];
+}
+```
 
 ### 滑动窗口算法
 - 算法时间复杂度一般为O(n)，一般用于解决子串、子数组问题
