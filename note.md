@@ -1137,3 +1137,11 @@ class Solution{
 }
 ```
 >![img.png](resource/random.png)
+
+
+
+### 田忌赛马 -- 优势洗牌
+
+- 给定两个数组nums1,nums2,nums1[i] > nums2[i]则nums1优势大，重新给nums1排序使得nums1优势尽可能大
+- 这道题的关键是给两个数组倒序排序,如果nums1[i] > nums2[i],则赋值，否则拿nums1最小值，就是田忌赛马
+- 使用优先级队列存储nums2，左右双指针遍历排序的nums1
