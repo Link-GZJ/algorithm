@@ -1179,3 +1179,58 @@ class Solution{
 - 如果只给一个遍历顺序，且没有记录空指针信息，则无法确定一棵唯一的二叉树
 - 如果不包含空指针信息，给定两个遍历顺序，前中/ 后中序遍历都可以确定一棵唯一的二叉树，前后不行
 - 如果包含空指针信息，前、后序遍历可以确定唯一的一棵二叉树，中序不行，因为不知道根节点在哪
+
+
+
+### 归并排序详解
+
+- 归并排序就是二叉树的后序遍历
+- 时间复杂度是Nlog(N),也就是递归树上所有的元素个数，树高logN,每层的节点是N，所以总的时间复杂度是Nlog(N);
+- 可以利用merge方法中，已排好序的两个数组，做一些应用
+-代码框架：
+  
+```java
+class Merge{
+    //辅助数组
+    private static int[] temp;
+    
+    public static void sort(int[] nums){
+        temp = new int[nums.length];
+        sort(nums, 0, nums.length-1);
+    }
+    
+    private static void sort(int[] nums, int lo, int hi){
+        if(lo == hi)return;//单个元素不需要排序
+      
+      //防止溢出
+      int mid = lo + (hi - lo) / 2;
+      //给左数组排序
+      sort(nums, lo, mid);
+      //给右数组排序
+      sort(nums, mid+1, hi);
+      
+      //合并两个有序数组
+      merge(nums, lo, mid, hi);
+    }
+    
+    private static void merge(int[] nums, int lo, int mid, int hi){
+        //辅助数组赋值
+        for(int i = lo; i <= hi; i++){
+            temp[i] = nums[i];
+        }
+        //双指针技巧合并两个有序数组
+        int i = lo, j = mid+1;
+        for(int p = lo; p <= hi; p++){
+            if(i == mid+1){
+                nums[p] = temp[j++];
+            }else if(j == hi+1){
+                nums[p] = temp[i++];
+            }else if(temp[i] > temp[j]){
+                nums[p] = temp[j++];
+            }else{
+                nums[p] = temp[i++];
+            }
+        }
+    }
+}
+```
