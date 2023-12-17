@@ -1234,3 +1234,64 @@ class Merge{
     }
 }
 ```
+
+
+
+### BST二叉搜索树特性
+
+- 每一个节点node，左子树节点的值都比node的值小，右子树节点的值都比node的值大
+- 左侧子树和右侧子树都是BST
+- BST的中序遍历结果是升序的。（如果先遍历右子树，中序遍历结果就是降序的）
+
+### BST的增删改查
+
+- 判断BST的合法性时，可以将当前节点的值，作为最大值传给左子树，作为最小值传给右子树
+- 查找一个target的框架
+```java
+public TreeNode BSTSearch(TreeNode root, int target){
+    if(root == null)return null;
+    if(root.val == target){
+        //doSomething
+        return root
+    }else if(root.val > target){
+        return BSTSearch(root.left, target);
+    }else{
+        return BSTSearch(root.right, target);    
+    }
+}
+```
+- 如果删除一个节点，分三种情况
+  - 该节点没有子节点
+  - 该节点有一个子节点
+  - 该节点有两个子节点
+  
+```java
+public TreeNode del(TreeNode root, int target){
+    if(root == null)return null;
+    if(root.val == target){
+        //前两种情况
+        if(root.left == null) return root.right;
+        if(root.right == null) return root.left;
+        //第三种情况
+        //寻找该节点左子树的最大节点，或右子树的最小节点来替换该节点
+        TreeNode min = minNode(root.right);
+        //删除min
+        root.right = del(root.right, min.val);
+        //替换root
+        min.left = root.left;
+        min.right = root.right;
+        root = min;
+    }else if(root.val > target){
+        root.left = del(root.left, target);
+    }else{
+        root.right = del(root.right, target);    
+    }
+    return root;
+}
+
+//BST的最小节点，也就是最左边的节点
+private TreeNode minNode(TreeNode root){
+    while(root.left != null) root = root.left;
+    return root;
+}
+```
