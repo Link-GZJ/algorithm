@@ -1187,7 +1187,7 @@ class Solution{
 - 归并排序就是二叉树的后序遍历
 - 时间复杂度是Nlog(N),也就是递归树上所有的元素个数，树高logN,每层的节点是N，所以总的时间复杂度是Nlog(N);
 - 可以利用merge方法中，已排好序的两个数组，做一些应用
--代码框架：
+- 归并排序是稳定排序，代码框架：
   
 ```java
 class Merge{
@@ -1293,5 +1293,69 @@ public TreeNode del(TreeNode root, int target){
 private TreeNode minNode(TreeNode root){
     while(root.left != null) root = root.left;
     return root;
+}
+```
+
+
+### 快速排序详解
+
+- 快速排序就是先将一个元素排好序，然后再将剩下的元素排好序。
+- 也可以这样理解：二叉树的前序遍历。快速排序的过程就是构造一棵BST的过程。
+- 时间复杂度：正常情况下Nlog(N),空间复杂度log(N).极端情况下时间复杂度为(N^2),空间复杂度为(N)
+- 快速排序是不稳定排序，代码框架：
+```java
+/*
+        快速排序算法
+ */
+class Quick{
+    public static void sort(int[] nums){
+        //为了避免极端情况出现，使用洗牌算法打乱数组
+        shuffle(nums);
+        sort(nums, 0, nums.length-1);
+    }
+    
+    private static void sort(int[] nums, int lo, int hi){
+        if(lo >= hi)return;
+        
+        //寻找切入点p，使其左边的元素小于等于nums[p],右边的元素大于nums[p]
+        int p = partition(nums, lo, hi);
+        
+        //递归排序剩余的元素
+        sort(nums, lo, p-1);
+        sort(nums, p+1, hi);
+    }
+    
+    private static void partition(int[] nums, int lo, int hi){
+        int pivot = nums[lo];
+        //定义区间[lo,i) <= pivot <= (j,hi]
+        int i = lo + 1, j = hi;
+        //遍历整个区间，使大于pivot的元素在右边，小于等于pivot的元素在左边
+        while(i <= j){
+            while(i < hi && nums[i] <= pivot)i++;
+            while(j > lo && nums[j] > pivot)j--;
+            if(i >= j)break;
+            swap(nums, i, j);
+        }
+        swap(nums, lo, j);
+        return j;
+    }
+    
+    //洗牌算法
+    private static void shuffle(int[] nums){
+        int n = nums.length;
+        Random random = new Random();
+      for (int i = 0; i < n; i++) {
+        //获取随机下标[i,n-1]
+        int j = i + random.nextInt(n-i);
+        //交换
+        swap(nums, i, j);
+      }
+    }
+    //交换元素
+  private static void swap(int[] nums, int i, int j){
+    int temp = nums[i];
+    nums[i] = nums[j];
+    nums[j] = temp;
+  }
 }
 ```
