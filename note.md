@@ -1359,3 +1359,30 @@ class Quick{
   }
 }
 ```
+
+### 计算完全二叉树的节点个数
+
+- 时间复杂度logN*logN
+- 满二叉树的节点个数 = 2^h-1,h是树的高度
+- count()会执行logN次，while的时间复杂度是logN,故总的时间复杂度logN*logN
+```java
+int count(TreeNode root){
+    TreeNode l = root, r = root;
+    //沿着最左侧和最右侧分别计算高度
+    int lh = 0, rh = 0;
+    while(l != null){
+        l = l.left;
+        lh++;
+    }
+    while(r != null){
+        r = r.right;
+        rh++;
+    }
+    //满二叉树
+    if(lh == rh){
+        return (int)Math.pow(2, lh)-1;
+    }
+    //普通二叉树,肯定是一半直接返回，一半接着计算，也就是每次少遍历一半的元素，最终遍历logN次
+    return count(root.left) + count(root.right) + 1;
+}
+```
