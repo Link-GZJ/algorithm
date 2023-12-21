@@ -1398,3 +1398,130 @@ int count(TreeNode root){
 - 概念 **度** 表示 **无向图** 节点的边数，**有向图** 中称为 **入度** 和 **出度**
 
 >![img.png](resource/graph.png)
+
+
+
+### 图的环检测 和 拓扑排序
+
+- 依赖问题一般可转换称有向图结构来解决
+- 两种遍历方式DFS 和 BFS
+- DFS遍历框架
+```java
+public class DfsGraph{
+    //用来存储已经走过的节点
+    private boolean[] visited;
+    //用来标记当前正在走的路径
+    private boolean[] onPath;
+    //是否存在环
+    private boolean hasCycle;
+    //拓扑排序的结果就是后序遍历的结果 如果graph[i] 存储是被依赖关系 则需要反转结果
+    private List<Integer> res = new ArrayList<>(); 
+
+  /**
+   * 返回图结构是否存在环
+   * @param n 表示节点 0 - n-1
+   * @param arr arr[i][0] 的前提是 arr[i][1]
+   * @return true 存在 false 不存在
+   */
+  public boolean findCycle(int n, int[][] arr){
+      visited = new boolean[n];
+      onPath = new boolean[n];
+      List<Integer> graph = buildGraph(n, arr);
+      //深度优先遍历
+      for (int i = 0; i < n; i++){
+          traverse(graph, i);
+      }
+      return hasCycle;
+  }
+  
+  private void traverse(List<Integer>[] graph, int i){
+      //代表有环
+      if(onPath[i]){
+          hasCycle = true;
+      }
+      //代表节点走过
+      if(visited[i]){
+          return;
+      }
+      //标记
+      onPath[i] = true;
+      //存储走过的节点
+      visited[i] = true;
+      
+      for(int t : graph){
+          traverse(graph, t);
+      }
+      //拓扑排序
+      res.add(i);  
+      //取消标记
+      onPath[i] = false;
+  }
+  
+  //用邻接表存储图
+  private List<Integer>[] buildGraph(int n, int[][] arr){
+      List<Integer> graph = new ArrayList[n];
+      //初始化
+      for(int i = 0; i < n; i++){
+          graph[i] = new ArrayList<>();
+      }
+      //赋值 存储依赖关系 graph[i]存储 i 依赖的节点
+      for (int[] t : arr){
+          int to = t[0], from = t[1];
+          graph[to].add(from);
+      }
+      return graph;
+  }
+}
+```
+- BFS遍历框架
+```java
+public class BfsGraph {
+    /**
+     * 返回图结构是否存在环
+     * @param n 表示节点 0 - n-1
+     * @param arr arr[i][0] 的前提是 arr[i][1]
+     * @return 返回拓扑排序结果
+     */
+    public int[] findCycle(int n, int[][] arr) {
+      //graph中存储的是被依赖关系  
+      List<Integer> graph = buildGraph(n, arr);
+      //入度数组
+      int[] indegree = new int[n];
+      //记录每个节点的入度
+      for (int[] t : arr){
+          int from = t[1], to = t[0];
+        indegree[to]++;
+      }
+      Queue<Integer> q = new LinkedList<>();
+      //将入度为0的节点入队列
+      for (int i = 0; i < indegree.length; i++){
+          if(indegree[i] == 0){
+              q.add(i);
+          }
+      }
+      //记录走过的节点
+      int count = 0;
+      //拓扑排序结果
+      int[] res = new int[n];
+      //广度优先遍历
+      while(!q.isEmpty()){
+          int sz = q.size();
+          for(int i = 0; i < sz; i++){
+              int node = q.remove();
+              res[count] = node;
+              count++;
+              //将graph[node]的节点入度减一
+              for(int t : graph[node]){
+                  indegree[t]--;
+                  //由于入度数组的存在，所以不会重复遍历节点
+                  if(indegree[t] == 0){
+                      q.add(t);
+                  }
+              }
+          }
+      }
+      //如果count != n,说明存在环
+      return count == n ? res : null;
+    }
+}
+```
