@@ -1440,7 +1440,7 @@ public class DfsGraph{
           hasCycle = true;
       }
       //代表节点走过
-      if(visited[i]){
+      if(visited[i] || hasCycle){
           return;
       }
       //标记
