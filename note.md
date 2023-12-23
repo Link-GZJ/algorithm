@@ -1525,3 +1525,142 @@ public class BfsGraph {
     }
 }
 ```
+
+
+
+### 二分图判定算法
+
+- 又称双色问题，给无向图节点染色，使相邻节点颜色不同，则是二分图，否则不能构成二分图
+- 利用color(boolean[])数组，一边遍历一边染色，bfs和dfs遍历都可以
+- 代码框架：
+```java
+class Bipartite {
+  boolean[] color;
+  boolean[] visited;
+  boolean isBipartite = ture;
+
+  public boolean isBipartite(int[][] graph) {
+    int n = graph.length;
+    color = new boolean[n];
+    visited = new boolean[n];
+    for (int i = 0; i < n; i++) {
+      if (!visited[i]) {
+        traverseDfs(graph, i);
+      }
+    }
+  }
+
+  //dfs遍历
+  private void traverseDfs(int[][] graph, int i) {
+    //确定不是二分图，没必要继续遍历了
+    if (!isBipartite) {
+      return;
+    }
+    //标记节点i
+    visited[i] = true;
+    //访问i的相邻节点
+    for (int ne : graph[i]) {
+      //ne没有被访问过，则染上和i不同的颜色
+      if (!visited[ne]) {
+        color[ne] = !color[i];
+        traverseDfs(graph, ne);
+      } else {
+        //被访问过，则比较颜色是否相同
+        if (color[ne] == color[i]) {
+          isBipartite = false;
+          return;
+        }
+      }
+    }
+  }
+
+  //bfs遍历
+  private void traverseBfs(int[][] graph, int i) {
+    if (!isBipartite) {
+      return;
+    }
+    Queue<Integer> q = new LinkedList<>();
+    q.offer(i);
+    while (!q.isEmpty()) {
+      int sz = q.size();
+      for (int j = 0; j < sz; j++) {
+        int node = q.poll();
+        //访问相邻节点
+        for (int t : graph[node]) {
+          //ne没有被访问过，则染上和i不同的颜色
+          if (!visited[t]) {
+            color[t] = !color[node];
+            //标记相邻节点
+            visited[t] = true;
+            q.offer(t);
+          } else {
+            //被访问过，则比较颜色是否相同
+            if (color[t] == color[node]) {
+              isBipartite = false;
+              return;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+
+### 并查集算法(Union Find)
+
+- 节点具有自反性、传递性、对称性的 **动态连通性** 特点，可使用并查集算法解决。例如：p与q连通，则q和p也是连通的，q和r连通，则p和r也连通。
+- 时空复杂度：构造函数的时间复杂度和空间复杂度都是O(N),union() 和 connected() 函数时间复杂度都是O(1)
+- 二维坐标(x,y) 转换 一维坐标 x * n + y(m 是行数，n是列数)。方向数组int[][] d = {{1,0}{0,1}{-1,0},{0,-1}}
+- 代码框架：
+```java
+class UF{
+    //记录连通分量
+    private int count;
+    //记录节点的根节点
+    private int[] parent;
+    
+    //初始化
+    public UF(int n){
+        count = n;
+        parent = new int[n];
+        //初始根节点指向自己
+        for(int i = 0; i < n; i++){
+            parent[i] = i;
+        }
+    }
+    
+    //连通节点p、q
+    public void union(int p, int q){
+        int rootP = find(p);
+        int rootQ = find(q);
+        if(rootP == rootQ)return;
+        
+        //连接p、q
+        parent[rootP] = rootQ;
+        //减小连通分量
+        count--;
+    }
+    //寻找节点x的根节点
+    private int find(int x){
+        //如果根节点不是自己，则递归去寻找根节点，同时会压缩树，直到都指向根节点，没有中间节点
+        if(parent[x] != x){
+            parent[x] = find(parent[x]);
+        }
+        return parent[x];
+    }
+    
+    //返回节点p、q是否连通
+    public boolean connected(int p, int q){
+        int rootP = find(p);
+        int rootQ = find(q);
+        return rootP == rootQ;
+    }
+    
+    //返回图的连通分量
+    public int count(){
+        return count;
+    }
+}
+```
