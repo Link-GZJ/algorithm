@@ -1664,3 +1664,37 @@ class UF{
     }
 }
 ```
+
+
+### Kruskal最小生成树算法
+
+- 树与图的最大区别就是图有环
+- 一般用于查找无向加权图中的最小生成树，基础算法是 **Union Find**,用于判断是否构成一棵树(包含所有节点(count==1)，且无环)
+- 从小到大给节点边的权重 **排序(贪心思路)**，遍历完成后得到最小权重，算法的时间复杂度是排序时间Nlog(N)
+- 代码框架：
+```java
+class Kruskal{
+    //edges[i][0] 是节点1，edges[i][1]是节点2，edges[i][2]是节点1和2这条无向边的权重
+    public boolean isTree(int n, int[][] edges){
+        //按照权重排序
+        Arrays.sort(edges, (o1,o2) -> o1[2]-o2[2]);
+        //记录最小生成树的权重之和
+        int wst = 0;
+        //并查集算法，见上文
+        UF uf = new UF(n);
+        for(int[] edge : edges){
+            int p = edge[0];
+            int q = edge[1];
+            int weight = edge[2];
+            //代表p、q已经连通，在加边就成环了
+            if(uf.connected(p,q)){
+                continue;
+            }
+            uf.union(p, q);
+            wst += weight;
+        }
+        //如果可以构成最小生成树，则连通分量应该是1
+        return uf.count == 1;
+    }
+}
+```
