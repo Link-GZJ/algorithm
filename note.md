@@ -1698,3 +1698,86 @@ class Kruskal{
     }
 }
 ```
+
+
+### Prim最小生成树算法
+
+- 核心原理：**横切定理** 通过不断的对图中的每个点进行横切，产生的**横切边**集合，配合使用**优先级队列**，每次选取最小的横切边，直到组成一棵没有环(visited数组)最小生成树
+- 数据结构基础是无向加权图的邻接表
+- 最坏情况下的时间复杂度是Nlog(N),N是边的条数
+- 代码框架：
+```java
+class Prim{
+    //标记节点是否访问过
+    private boolean[] visited;
+    //存储横切边集合
+    private PriorityQueue q;
+    /*
+     * 无向加权图邻接表
+     * graph[i]存储节点与i相连的边
+     * int[]三元组存储 from, to, weigth
+     */
+    private List<int[]>[] graph;
+    //权重
+    private int weight;
+    
+    //初始化
+    public Prim(List<int[]>[] graph){
+        //节点数量
+        int n = graph.length;
+        visited = new boolean[n];
+        this.graph = graph;
+        //队列按从小到大排序
+        q = new PriorityQueue<>(new Comparator<>(){
+            public int compare(int[] o1, int[] o2){
+                return o1[2] - o2[2];
+            }
+        });
+        //随便选一个点横切
+        visited[0] = true;
+        cut(0);
+        
+        //对剩余节点进行横切
+        while(!q.isEmpty()){
+            //选最小的横切边作为最小生成树的一部分
+            int[] edges = q.poll();
+            int to = edges[1];
+            //q中存储着多次横切的横切边
+            if(visited[to]){
+                continue;
+            }
+            //加入最小生成树
+            weight += edges[2];
+            visited[to] = true;
+            //对下一个节点横切
+            cut(to);
+        }
+    }
+    
+    //返回最小生成树的权重
+    public int weight(){
+        return weight;
+    }
+    
+    //返回是否可以构成一棵二叉树
+    public boolean allConnected(){
+        for(boolean b : visited){
+            if(!b)return false;
+        }
+        return true;
+    }
+    
+    //对节点i进行横切
+    private void cut(int i){
+        for(int[] edges : graph[i]){
+            int to = edges[1];
+            //如果节点访问过，跳过
+            if(visited[to]){
+                continue;
+            }
+            //将横切边加入队列
+            q.add(edges);
+        }
+    }
+}
+```
