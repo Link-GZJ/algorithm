@@ -1781,3 +1781,55 @@ class Prim{
     }
 }
 ```
+
+
+
+### Dijkstra 最值路径算法
+
+- 核心：类BFS遍历+优先级队列(贪心思想)。时间复杂度Elog(E),E是边的数量
+- 使用限制：有向加权图、权重无负值，用于解决从start到其他节点的最值路径
+- 如果加一条边，总权重变大，则是求最小值。否则是求最大值
+- 代码框架：
+```java
+class Dijkstra{
+    
+    //返回start节点到其他节点的权重最小路径
+    public int[] dijkstra(int start, List<int[]> graph){
+        //节点个数
+        int n = graph.length;
+        //用于存储各节点到start的距离，会不断变小
+        int[] distTo = new int[n];
+        //按距离start的距离从小到大排序 二元组{节点，和start的距离}
+        PriorityQueue<int[]> q = new PriorityQueue<>((o1,o2) -> o1[1] - o2[1]);
+        //初始化,求最小值，默认赋最大值
+        Arrays.fill(distTo, Integer.MAX_VALUE);
+        //base case
+        distTo[start] = 0;
+        //从start开始遍历
+        q.offer(new int[]{start, 0});
+        //类bfs遍历其他节点
+        while(!q.isEmpty()){
+            int[] cur = q.poll();
+            int curId = cur[0], distFromStart = cur[1];
+          /*
+           * 如果是求start到end最短距离   
+           * if(curId == end){ return distFromStart; }
+           */
+            //存在start到该节点更短的路径
+            if(distFromStart > distTo[curId]){
+                continue;
+            }
+            //遍历cur的相邻节点
+            for(int[] t : graph[curId]){
+                int nextId = t[0], nextDistFromStart = distFromStart + t[1];
+                //如果nextId与start的距离更近，则更新distTo,并加入队列
+                if(distTo[nextId] > nextDistFromStart){
+                    distTo[nextId] = nextDistFromStart;
+                    //节点重复没关系，后面会过滤掉
+                    q.offer(new int[]{nextId, nextDistFromStart});
+                }
+            }
+        }
+    }
+}
+```
