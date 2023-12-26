@@ -1861,3 +1861,38 @@ class Stack{
     }
 }
 ```
+
+
+### 单调队列
+
+- 用于解决 **滑动窗口类** 问题，即在队首移出元素，在队尾添加元素，单调队列的特征是有序
+- 整体时间复杂度为O(n),元素只会入栈和出栈一次,即需要实现单个元素入栈和出栈的摊还(平均)时间复杂度为O(1)
+- 代码框架：
+```java
+class MonotonicQueue{
+    //使用LinkedList,它可以O(1)时间操作队首、队尾元素
+    LinkedList<E> q = new LinkedList<>();
+    
+    //在队尾添加新元素
+    public void push(E n){
+        //只关注最大元素的情况下，在n前面且比n小就没用了
+        while(!q.isEmpty() && q.getLast() < n){
+            q.removeLast();
+        }
+        q.addLast(n);
+    }
+    
+    //返回队列最大值
+    public E max(){
+        //最大元素在队首
+        return q.getFirst();
+    }
+    
+    //移除队首元素
+    public void pop(E n){
+        if(n == q.getFirst()){
+            q.removeFirst();
+        }
+    }
+}
+```
