@@ -1833,3 +1833,31 @@ class Dijkstra{
     }
 }
 ```
+
+
+
+### 单调栈
+
+- 解决 **下一个更大元素** 类问题，栈内元素有序
+- 时间复杂度为O(n),n为元素个数，元素只会出入栈一次
+- 环形数组：翻倍索引+取模解决
+- 代码框架：
+```java
+class Stack{
+    public int[] nextGreaterElement(int[] nums){
+        int n = nums.length;
+        int[] res = new int[n];
+        Stack s = new Stack();
+        //倒叙遍历
+        for(int i = n-1; i >= 0; i--){
+            //两个大元素之间的小元素无用，不影响后序元素的判断
+            while(!s.isEmpty() && s.peek() <= nums[i]){
+                s.pop();
+            }
+            res[i] = s.peek();
+            s.push(nums[i]);
+        }
+        return res;
+    }
+}
+```
