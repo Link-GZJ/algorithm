@@ -1896,3 +1896,116 @@ class MonotonicQueue{
     }
 }
 ```
+
+
+
+### LRU(Least Recently Used) 最久未使用缓存淘汰策略
+
+- 底层实现：哈希表+双链表 LinkedHashMap，O(1)时间实现添加删除元素
+- 手撸代码：
+```java
+class LRUCache{
+    Map<Integer, Node> map;
+    //容量
+    int capacity;
+    DoubleNode cache;
+    public LRUCache(int capacity){
+        this.capacity = capacity;
+        map = new HashMap<>();
+        cache = new DoubleNode();
+    }
+    public int get(int key){
+        if(!map.containsKey(key)){
+            return -1;
+        }
+        makeRecently(key);
+        return map.get(key).value;
+    }
+    public int put(int key, int value){
+        if(map.containsKey(key)){
+            //删除旧的，并重新添加
+            deleteKey(key);
+            addRecently(key, value);
+            return;
+        }
+        //容量满了
+        if(cache.size == capacity){
+            //删除最久未使用的元素
+            deleteFirst();
+        }
+        addRecently(key, value);
+    }
+    
+    //提升key的使用状况
+    private void makeRecently(int key){
+        Node x = map.get(key);
+        cache.remove(x);
+        cache.addLast(x);
+    }
+    
+    //删除key
+    private void deleteKey(int key){
+      Node x = map.get(key);
+      cache.remove(x);
+      map.remove(key);
+    }
+    
+    //添加元素
+    private void addRecently(int key, int value){
+        Node x = new Node(key, value);
+        cache.addLast(x);
+        map.put(key, x);
+    }
+    
+    private void deleteFirst(){
+        Node x = cache.removeFirst();
+        map.remove(x.key);
+    }
+}
+
+//链表节点
+class Node{
+    int key,value;
+    Node prev, next;
+    public Node(int k, int v){
+        key = k;
+        value = v;
+    }
+}
+//双链表 新元素在尾部添加
+class DoubleNode{
+    //虚拟头尾节点
+    Node head, tail;
+    //节点数量
+    int size;
+    //初始化
+    public DoubleNode(){
+        head = new Node(0, 0);
+        tail = new Node(0, 0);
+        size = 0;
+    }
+    
+    //添加节点
+    public void addLast(Node x){
+        tail.prev.next = x;
+        x.prev = tail.prev;
+        x.next = tail;
+        tail.prev = x;
+        size++;
+    }
+    
+    //删除节点
+    public void remove(Node x){
+        x.prev.next = x.next;
+        x.next.prev = x.prev;
+        size--;
+    }
+    
+    //移除头节点并返回(最久未使用)
+    public Node removeFirst(){
+        Node first = head.next;
+        remove(first);
+        return first;
+    }
+}
+```
