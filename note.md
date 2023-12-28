@@ -2009,3 +2009,88 @@ class DoubleNode{
     }
 }
 ```
+
+
+
+### LFU(Least Frequently Used) 最不常使用缓存淘汰策略
+
+- 底层：哈希集合+链表，O(1)时间实现元素的添加、查找、删除
+- 代码：
+```java
+class LFUCache{
+    //键值对
+    Map<Integer, Integer> keyToValue;
+    //key和频次的映射
+    Map<Integer, Integer> keyToFrequent;
+    //频次和key列表的映射
+    Map<Integer, LinkedHashSet<Integer>> frequentToKeys;
+    //缓存容量
+    int capacity;
+    //最小的使用频次
+    int minFrequent;
+    public LFUCache(int capacity){
+        keyToValue = new HashMap<>();
+        keyToFrequent = new HashMap<>();
+        frequentToKeys = new HashMap<>();
+        this.capacity = capacity;
+        minFrequent = 0;
+    }
+    
+    public int get(int key){
+        if(!keyToValue.containsKey(key)){
+            return -1;
+        }
+        //给key的使用频率增加1
+        increaseFrequent(key);
+        return keyToValue.get(key);
+    }
+    
+    public void put(int key, int value){
+        if(keyToValue.containsKey(key)){
+          //给key的使用频率增加1
+          increaseFrequent(key);
+          keyToValue.put(key, value);
+          return;
+        }
+        //容量满了
+        if(capacity == keyToValue.size()){
+            //删除使用频次最低的元素
+            removeLeastFrequentlyUsed();
+        }
+        keyToValue.put(key, value);
+        keyToFrequent.put(key, 1);
+        frequentToKeys.putIfAbsent(1, new LinkedHashSet<>());
+        frequentToKeys.get(1).add(key);
+        minFrequent = 1;
+    }
+    
+    private void increaseFrequent(int key){
+        //修改key和频率映射
+        int frequent = keyToFrequent.get(key);
+        keyToFrequent.put(key, frequent+1);
+        //修改频率和key的映射
+        LinkedHashSet<Integer> keyList = frequentToKeys.get(frequent);
+        keyList.remove(key);
+        frequentToKeys.put(frequent+1, new LinkedHashSet<>());
+        frequentToKeys.get(frequent+1).add(key);
+        if(keyList.isEmpty()){
+            frequentToKeys.remove(frequent);
+            if(frequent == minFrequent){
+                minFrequent++;
+            }
+        }
+    }
+    
+    private void removeLeastFrequentlyUsed(){
+        LinkedHashSet<Integer> keyList = frequentToKeys.get(minFrequent);
+        int delKey = keyList.iterator().next();
+        keyList.remove(delKey);
+        if(keyList.isEmpty()){
+            frequentToKeys.remove(minFrequent);
+            //minFrequent不用修改，只用会添加新元素，直接覆盖了
+        }
+        keyToValue.remove(delKey);
+        keyToFrequent.remove(delKey);
+    }
+}
+```
