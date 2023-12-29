@@ -2315,4 +2315,16 @@ class TrieMap<V>{
         return size;
     }
 }
+
+/**
+ * 实现TrieSet只要封装一下TrieMap即可
+ */
+class TrieSet{
+    private TrieMap<Object> map = new TrieMap<>();
+    
+    public void add(String key){
+        map.put(key, new Object());
+    }
+    //后面的方法大同小异
+}
 ```
