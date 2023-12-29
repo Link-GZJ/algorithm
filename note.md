@@ -2094,3 +2094,225 @@ class LFUCache{
     }
 }
 ```
+
+
+
+### Trie字典树(前缀树)
+
+- Trie前缀树用于快速解决字符串前缀问题，键固定为字符串类型
+- 树枝存储键，节点存储值
+- 本文实现TrieMap、TrieSet
+```java
+class TrieMap<V>{
+    //ASCII码的数量
+    private static final int R = 256;
+    //TrieMap中键值对的数量
+    private int size;
+    //根节点
+    private TrieNode<V> root;
+    //Trie前缀树的节点
+    private static class TrieNode<V>{
+        V val;
+        TrieNode<V>[] children = new TrieNode[R];
+    }
+    
+    //添加键值对
+    public void put(String key, V val){
+        if(!containsKey(key)){
+            size++;
+        }
+        //递归添加节点
+        root = put(root, key, val, 0);
+    }
+    private TrieNode<V> put(TrieNode<V> node, String key, V val, int i){
+        if(node == null){
+            //如果树枝不存在，新建树枝
+            node = new TrieNode<>();
+        }
+        if(i == key.length()){
+            //key的路径插入完成
+            node.val = val;
+        }else{
+            char c = key.charAt(i);
+            node.children[c] = put(node.children[c], key, val, i+1);
+        }
+        return node;
+    }
+    //删除键值对
+    public void remove(String key){
+        if(!containsKey(key)){
+            return;
+        }
+        root = remove(root, key, 0);
+        size--;
+    }
+    private TrieNode<V> remove(TrieNode<V> node, String key, int i){
+        if(node == null){
+            return null;
+        }
+        if (i == key.length()){
+            node.val = null;
+        }else{
+            char c = key.charAt(i);
+            node.children[c] = remove(node.children[c], key, i+1);
+        }
+        //存在节点不能删除
+        if(node.val != null){
+            return node;
+        }
+        //存在后缀不能删除
+        for(char c = 0; c < R; c++){
+            if(node.children[c] != null){
+                return node;
+            }
+        }
+        //可以删除
+        return null;
+    }
+    //获取key的值
+    public V get(String key){
+        TrieNode<V> node = getNode(root, key);
+        if(node == null || node.val == null){
+            return null;
+        }
+        return node.val;
+    }
+    public boolean containsKey(String key){
+        return get(key) != null;
+    }
+    // 在 Map 的所有键中搜索 query 的最短前缀
+    public String shortestPrefixOf(String query){
+        TrieNode<V> node = root;
+        for(int i = 0; i < query.length(); i++){
+            if(node == null){
+                return "";
+            }
+            if(node.val != null){
+                return query.substring(0, i);
+            }
+            char c = query.charAt(i);
+            node = node.children[c];
+        }
+        if(node != null && node.val != null){
+            return query;
+        }
+        return "";
+    }
+    // 在 Map 的所有键中搜索 query 的最长前缀
+    public String longestPrefixOf(String query){
+      TrieNode<V> node = root;
+      int max_len = 0;
+      for(int i = 0; i < query.length(); i++){
+        if(node == null){
+          break;
+        }
+        if(node.val != null){
+          max_len = i;
+        }
+        char c = query.charAt(i);
+        node = node.children[c];
+      }
+      if(node != null && node.val != null){
+        return query;
+      }
+      return query.substring(0, max_len);
+    }
+    // 搜索所有前缀为 prefix 的键   
+    public List<String> keysWithPrefix(String prefix){
+        List<String> res = new ArrayList<>();
+        //先寻找前缀为prefix的节点，然后从该节点开始dfs遍历
+        TrieNode<V> node = getNode(root, prefix);
+        if(node == null){
+            return res;
+        }
+        traverse(node, new StringBuilder(prefix), res);
+        return res;
+    }
+    private void traverse(TrieNode<V> node, StringBuilder path, List<String> res){
+        if(node == null){
+            return;
+        }
+        if (node.val != null){
+            res.add(path.toString());
+        }
+        for(char c = 0; c < R; c++){
+            path.append(c);
+            traverse(node.children[c], path, res);
+            path.deleteCharAt(path.length()-1);
+        }
+    }
+    // 判断是和否存在前缀为 prefix 的键
+    public boolean hasKeyWithPrefix(String prefix){
+        return getNode(root, prefix) != null;
+    }
+    //通配符 . 匹配任意字符，搜索所有匹配的键
+    public List<String> keysWithPattern(String pattern){
+        List<String> res = new ArrayList<>();
+        traverse(root, pattern, new StringBuilder(), res, 0);
+        return res;
+    }
+    private void traverse(TrieNode<V> node, String pattern, StringBuilder path, List<String> res, int i){
+        if(node == null){
+            return;
+        }
+        if(i == pattern.length()){
+            if(node.val != null){
+                res.add(path.toString());
+            }
+            return;
+        }
+        char c = pattern.charAt(i);
+        if('.' == c){
+            for(char d = 0; d < R; d++){
+                path.append(d);
+                traverse(node.children[d], pattern, path, res, i+1);
+                path.deleteCharAt(path.length()-1);
+            }
+        }else{
+            path.append(c);
+            traverse(node.children[c], pattern, path, res, i+1);
+            path.deleteCharAt(path.length()-1);
+        }
+    }
+    // 函数定义：从 node 节点开始匹配 pattern[i..]，返回是否成功匹配
+    public boolean hasKeyWithPattern(String pattern){
+        return hasKeyWithPattern(root, pattern, 0);
+    }
+    private boolean hasKeyWithPattern(TrieNode<V> node, String pattern, int i){
+        if(node == null){
+            return false;
+        }
+        if(i == pattern.length()){
+            return node.val != null;
+        }
+        char c = pattern.charAt(i);
+        //未匹配到通配符
+        if(c != '.'){
+            return hasKeyWithPattern(node.children[c], pattern, i+1);
+        }
+        //匹配到通配符
+        for(char d = 0; d < R; d++){
+            if(hasKeyWithPattern(node.children[d], pattern, i+1)){
+                return ture;
+            }
+        }
+        return false;
+    }
+    
+    //从node节点开始搜索key
+    private TrieNode<V> getNode(TrieNode<V> node, String key){
+        TrieNode<V> p = node;
+        for(int i = 0; i < key.length(); i++){
+            if(p == null){
+                return null;
+            }
+            char c = key.charAt(i);
+            p = p.children[c];
+        }
+        return p;
+    }
+    public int size(){
+        return size;
+    }
+}
+```
