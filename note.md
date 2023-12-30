@@ -2336,3 +2336,97 @@ class TrieSet{
 - 利用双优先级队列完成，大顶堆(元素较小) + 小顶堆(元素较大)
 - 保证两个堆的元素数量差距在1之内，大顶堆的栈顶元素 < 小顶堆的栈顶元素
 - 添加元素时，如果往大顶堆添加元素，则先把元素添加到小顶堆，再把小顶堆的栈顶元素给大顶堆。往小顶堆添加元素反之。
+
+
+### 二叉堆(Binary Heap)详解
+
+- java已有实现(PriorityQueue)，看看即可
+- 一种完全二叉树，底层由数组实现
+- 分大顶堆(每个节点都大于两个子节点)、小顶堆。应用于堆排序、优先级队列
+- 主要操作：在堆底添加元素(大顶堆)，然后swim(上浮)到合适位置。删除堆顶元素时，和堆底元素交换后删除，然后堆顶元素sink(下沉)到合适位置
+- 实现一个简单的优先级队列,时间复杂度logk：
+```java
+/*
+    大顶堆实现一个简单的优先级队列
+ */
+class MaxPQ<Key extends Compareable<Key>>{
+    //存储元素的数组
+    private Key[] pq;
+    //当前优先级队列的元素数量
+    private int size = 0;
+    public MaxPQ(Class<Key> clazz, int cap){
+        //索引0不使用
+        pq = (Key[])Array.newInstance(clazz, cap+1);
+    }
+    //返回当前队列最大元素
+    public Key max(){
+        return pq[1];
+    }
+    //插入元素
+    public void insert(Key e){
+        size++;
+        //新元素添加到最后
+        pq[size] = e;
+        //上浮的合适位置
+        swim(size);
+    }
+    //删除并返回当前队列的最大元素
+    public Key delMax(){
+        //把最大元素换到堆底
+        Key max = pq[1];
+        swap(1, size);
+        pq[size] = null;
+        size--;
+        //下沉到合适位置
+        sink(1);
+        return max;
+    }
+    //上浮第x个元素，以维护二叉堆的性质
+    private void swim(int x){
+        //x比父节点大，且没到堆顶
+        while(x > 1 && less(parent(x), x)){
+          swap(parent(x), x);
+          x = parent(x);
+        }
+    }
+    //下沉第x个元素
+    private void sink(int x){
+        //没到堆底
+        while(left(x) <= size){
+            //假设左孩子大
+            int max = left(x);
+            //如果存在右孩子
+            if(right(x) <= size && less(max, right(x))){
+                max = right(x);
+            }
+            //x比两个孩子都大，就不用换位置了
+            if(less(max, x)) break;
+            //否则和较大的换位置
+            swap(max, x);
+            x = max;
+        }
+    }
+    //交换数组的两个元素
+    private void swap(int i, int j){
+        Key temp = pq[i];
+        pq[i] = pq[j];
+        pq[j] = temp;
+    }
+    //元素pq[i]是否比pq[j]小
+    private boolean less(int i, int j){
+        return pq[i].compareTo(pq[j]) < 0;
+    }
+    //父节点索引
+    private int parent(int x){
+        return x/2;
+    }
+    //左孩子节点
+    private int left(int x){
+        return x*2;
+    }
+    //右孩子节点
+    private int right(int x){
+        return x*2+1;
+    }
+}
+```
