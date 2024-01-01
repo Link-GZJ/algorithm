@@ -2436,3 +2436,67 @@ class MaxPQ<Key extends Compareable<Key>>{
 
 - 队列实现栈的功能：每次删除元素时，不断让队首元素出队，然后再入队，直到留下最后一个元素然后出队
 - 栈实现队列的功能：需要两个队列，s1添加元素，删除元素时，如果s2为空，则让s1的元素出栈加入s2,再删除s2栈顶元素即可
+
+
+
+### 动态规划问题-最长递增子序列
+
+- 经典动归问题Longest Increasing Subsequence简称LIS
+- 动态规划解法：dp[i] 代表截至nums[i]处的最长递增子序列，dp[i] = max(dp[i], dp[j] +1); 0 <= j < i && nums[i] > nums[j];时间复杂度 O(n^2)
+- 二分查找解法：和一个patience game纸牌游戏有关。需要多个堆按照特定规则摆放纸牌，最后堆数就是最长递增子序列的长度;时间复杂度O(Nlog(N))
+- 大概写一下代码:
+```java
+class LIS{
+    //动态规划解法
+    public int lengthOfLIS(int[] nums){
+        int n = nums.length;
+        int[] dp = new int[n];
+        //默认长度是1
+        Arrays.fill(dp, 1);
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < i; j++){
+                if(nums[i] > nums[j]){
+                    dp[i] = Math.max(dp[i], dp[j]+1);
+                }
+            }
+        }
+        int res = 0;
+        for(int d : dp){
+            res = Math.max(res, d);
+        }
+        return res;
+    }
+    
+    //二分查找解法
+    /*
+        按照顺序遍历数组中的元素，要求nums[i]小于堆顶的元素，如果没有满足要求的堆，则新建一个堆。多个满足条件的堆，则选择最左边的堆
+        这样堆顶的元素就是有序的，可用二分查找
+        最后的堆数就是最长递增子序列长度
+        正常人想不出来这种
+     */
+    public int lengthOfLIS2(int[] nums){
+        int n = nums.length;
+        int[] heap = new int[n];
+        int heapCount = 0;
+        for(int i = 0; i < n; i++){
+            int poker = nums[i];
+            int left = 0, right = heapCount;
+            while(left < heapCount){
+                int mid = left + (right - left)/2;
+                if(heap[mid] >= poker){
+                    right = mid;
+                }else{
+                    left = mid + 1;
+                }
+            }
+            //没找到合适的堆
+            if(left == heapCount){
+                //新建一堆
+                heapCount++;
+            }
+            heap[left] = poker;
+        }
+        return heapCount;
+    }
+}
+```
