@@ -2535,3 +2535,11 @@ class LIS{
 - base case: if(i < 0)return j+1; if(j < 0)return i+1;//一方遍历完之后，返回另一方的剩余未遍历的字符数
 - 状态转移方程： if(s1[i] == s2[j]) //两个字符相等，不用任何操作，直接往后遍历 return dp(s1, i-1, s2, j-1); else return min(dp(i,j-1)+1, dp(i-1,j)+1, dp(i-1,j-1)+1);//返回插入、删除、替换步骤最少的一个
 - 两种解法：1.自顶向下的备忘录解法 2.自底向上的dp table解法，二维数组dp可压缩到一维
+
+
+### 动态规划问题-最大子数组
+
+- 三种思路：滑动窗口、动态规划、前缀和
+- 滑动窗口：在windowSum < 0时缩小窗口，因为最大子数组不会以负数开头
+- 动态规划：dp[i]是以nums[i]结尾的最大子数组， dp[i] = max(nums[i], nums[i] + dp[i-1]);
+- 前缀和：以nums[i] 结尾的最大子数组 = preSum[i+1] - min(preSum[0~i]);
