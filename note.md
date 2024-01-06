@@ -2543,3 +2543,10 @@ class LIS{
 - 滑动窗口：在windowSum < 0时缩小窗口，因为最大子数组不会以负数开头
 - 动态规划：dp[i]是以nums[i]结尾的最大子数组， dp[i] = max(nums[i], nums[i] + dp[i-1]);
 - 前缀和：以nums[i] 结尾的最大子数组 = preSum[i+1] - min(preSum[0~i]);
+
+
+### 动态规划问题-最长公共子序列
+
+- 求子序列问题： **一般是两个指针在两个字符串上移动**，不管是从前往后，还是从后往前，处理好base case就好
+- dp(s1, i, s2, j) 返回s1.sub(i) 和 s2.sub(j)的最长公共子序列
+- if(s1[i] == s2[j]) return 1+dp(s1,i+1,s2,j+1); else return max(dp(s1,i+1,s2,j),dp(s1,i,s2,j+1));
