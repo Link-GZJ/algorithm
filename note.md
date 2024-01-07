@@ -2560,3 +2560,30 @@ class LIS{
 - 2.二维dp数组，如前文编辑距离、最长公共子序列，则定义dp[i][j] s1.sub(i) 和 s2.sub(j)的子序列长度，一般是两个字符串
 - 求一个字符串的最长回文序列则用的是第二种思维，定义dp[i][j] 为子串s[i,j]的回文序列，如果已知dp[i+1][j-1],if(s[i] == s[j]) dp[i][j] = 2+dp[i+1][j-1]; else dp[i][j] = max(dp[i+1][j],dp[i][j-1]);
 - 都是归纳总结思维，容易从dp[i-1] 推断到 dp[i]
+
+
+### 动态规划问题 - 01背包
+
+- 给定一个可装载W重量的背包，N个物品，每个物品都有重量和价值两个属性，第i个物品的重量为wt[i-1],价值为val[i-1],问这个背包能装的最大价值是多少？
+- 确定状态：背包的可装载重量w,和物品i,选择就是装下这个物品和不装
+- 定义dp[i][w] 为对于i个物品背包可装载重量为w时的价值，base case: dp[0][w] = 0, dp[i][0] = 0,没有物品或没有空间时，价值为0
+- 状态转移方程： 对于第i个物品选择不装：dp[i][w] = dp[i-1][w]; 装：dp[i][w] = val[i-1] + dp[i-1][w-wt[i-1]];
+```java
+class Demo{
+    public int dp(int N, int W, int[] wt, int[] val){
+        int[][] dp = new int[N+1][W+1];
+        for(int i = 1; i <= N; i++){
+            for(int w = 1; w <= W; w++){
+                //空间不够只能选择不装
+                if(w-wt[i-1] < 0){
+                    dp[i][w] = dp[i-1][w];
+                }else{
+                //选择装第i个物品和不装第i个物品中的最大值    
+                    dp[i][w] = Math.max(dp[i-1][w], val[i-1] + dp[i-1][w-wt[i-1]]);
+                }
+            }
+        }
+        return dp[N][W];
+    }
+}
+```
