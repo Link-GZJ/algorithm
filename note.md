@@ -2598,3 +2598,11 @@ class Demo{
 - 给定一个数组，通过给数组+/-数组中元素得到target;
 - 将nums分为子集A、B,分别赋予+、-，则A-B = target A = target+B A+A = target+sum(nums) A = (target+sum(nums))/2这就转化成了第一种自己问题
 - 做相关变体问题时，注意数组元素是否包含0，这会影响base case
+
+
+
+### 动态规划问题-最小路径和
+
+- 给定二维数组grid[][],只能向右或向下移动，问到达右下角的最小路径和
+- 定义dp[i][j]为(0,0)到达(i,j)的最小路径和
+- 状态转移方程 dp[i][j] = min(dp[i-1][j], dp[i][j-1]) + grid[i][j]
