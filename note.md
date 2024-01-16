@@ -2616,3 +2616,13 @@ class Demo{
 - 状态转移方程 = ( min(dp[i+1][j], dp[i][j+1]) - grid[i][j] ) <= 0 ? 1 : ()
 - 解释： 从(i,j)到右下角需要的最少健康值 = 从(i+1,j) 和 (i, j+1)到右下角需要的健康值的最小值 减去 grid[i][j],如果结果小于等于0，则初始健康值为1，否则为原值
 - 比如(i+1,j)需要4点，grid[i][j] = -4,则(i,j)需要的健康值最小为1
+
+
+### 动态规划问题-辐射4转盘
+
+- 给定字符串ring,圆盘的指针在上面转动，问输出字符串key需要的最少步数，每次按按钮也算步数
+- 定义dp(ring, i, key, j)函数为 指针指向ring[i]时，输出key[j...]需要的最少步数
+- base case : j == key.length() return 0;
+- 选择1：key[j] 在ring中的位置可能有多个，那么就全部穷举出来，取最小值。用Map<Character, List<Integer>>存储ring中字符和索引的映射
+- 选择2：指针当前指向ring[i] 那么转向 x = ring.index(key[j])可以逆时针，也可以顺时针，取较小值。step = abs(i-x); step = min(step, ring.length-step);
+- 状态转移方程 res = min(res, step + dp(ring, x, key, j+1) + 1)
