@@ -2626,3 +2626,13 @@ class Demo{
 - 选择1：key[j] 在ring中的位置可能有多个，那么就全部穷举出来，取最小值。用Map<Character, List<Integer>>存储ring中字符和索引的映射
 - 选择2：指针当前指向ring[i] 那么转向 x = ring.index(key[j])可以逆时针，也可以顺时针，取较小值。step = abs(i-x); step = min(step, ring.length-step);
 - 状态转移方程 res = min(res, step + dp(ring, x, key, j+1) + 1)
+
+
+### 动态规划问题-加权最短路径
+
+- 现在有 n 个城市，分别用 0, 1..., n - 1 这些序号表示，城市之间的航线用三元组 [from, to, price] 来表示，比如说三元组 [0,1,100] 就表示，从城市 0 到城市 1 之间的机票价格是 100 元。
+- 给出起点start，中转站限制k个(也就是k+1个边)，终点end，问start到end的最低费用，无法到达返回-1
+- 定义dp(int n, int k)函数为从节点start在k条边限制内到达n的最低费用
+- base case n == end return 0; k == 0 return -1;
+- 选择： 到达end的最低费用 = 到达end前一个节点s的最低费用 + s到end的费用，穷举s,选择费用最低的即可
+- 状态转移方程： res = min(res, dp(s, k-1));
